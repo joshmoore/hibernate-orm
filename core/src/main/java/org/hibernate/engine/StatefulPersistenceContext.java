@@ -723,6 +723,9 @@ public class StatefulPersistenceContext implements PersistenceContext {
 	 */
 	public Object proxyFor(Object impl) throws HibernateException {
 		EntityEntry e = getEntry(impl);
+		if (e == null) {
+			return impl;
+		}
 		return proxyFor( e.getPersister(), e.getEntityKey(), impl );
 	}
 
