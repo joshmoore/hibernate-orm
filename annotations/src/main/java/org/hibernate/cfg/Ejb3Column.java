@@ -27,7 +27,10 @@ import java.util.Map;
 
 import org.hibernate.AnnotationException;
 import org.hibernate.AssertionFailure;
+import org.hibernate.annotations.ColumnTransformer;
+import org.hibernate.annotations.ColumnTransformers;
 import org.hibernate.annotations.Index;
+import org.hibernate.annotations.common.reflection.XProperty;
 import org.hibernate.cfg.annotations.Nullability;
 import org.hibernate.mapping.Column;
 import org.hibernate.mapping.Formula;
@@ -66,6 +69,8 @@ public class Ejb3Column {
 	private String formulaString;
 	private Formula formula;
 	private Table table;
+	private String readExpression;
+	private String writeExpression;
 
 	public void setTable(Table table) {
 		this.table = table;
@@ -213,6 +218,19 @@ public class Ejb3Column {
 			this.mappingColumn.setNullable( nullable );
 			this.mappingColumn.setSqlType( sqlType );
 			this.mappingColumn.setUnique( unique );
+			
+			if(writeExpression != null && !writeExpression.matches("[^?]*\\?[^?]*")) {
+				throw new AnnotationException(
+						"@WriteExpression must contain exactly one value placeholder ('?') character: property ["
+								+ propertyName + "] and column [" + logicalColumnName + "]"
+				);
+			}
+			if ( readExpression != null) {
+				this.mappingColumn.setCustomRead( readExpression );
+			}
+			if ( writeExpression != null) {
+				this.mappingColumn.setCustomWrite( writeExpression );
+			}
 		}
 	}
 
@@ -449,12 +467,45 @@ public class Ejb3Column {
 					column.setPropertyHolder( propertyHolder );
 					column.setJoins( secondaryTables );
 					column.setMappings( mappings );
+					column.extractDataFromPropertyData(inferredData);
 					column.bind();
 					columns[index] = column;
 				}
 			}
 		}
 		return columns;
+	}
+
+	//must only be called after all setters are defined and before bind
+	private void extractDataFromPropertyData(PropertyData inferredData) {
+		if ( inferredData != null ) {
+			XProperty property = inferredData.getProperty();
+			if ( property != null ) {
+				processExpression( property.getAnnotation( ColumnTransformer.class ) );
+				ColumnTransformers annotations = property.getAnnotation( ColumnTransformers.class );
+				if (annotations != null) {
+					for ( ColumnTransformer annotation : annotations.value() ) {
+						processExpression( annotation );
+					}
+				}
+			}
+		}
+	}
+
+	private void processExpression(ColumnTransformer annotation) {
+		String nonNullLogicalColumnName = logicalColumnName != null ? logicalColumnName : ""; //use the default for annotations 
+		if ( annotation != null &&
+				( StringHelper.isEmpty( annotation.forColumn() )
+						|| annotation.forColumn().equals( nonNullLogicalColumnName ) ) ) {
+			readExpression = annotation.read();
+			if ( StringHelper.isEmpty( readExpression ) ) {
+				readExpression = null;
+			}
+			writeExpression = annotation.write();
+			if ( StringHelper.isEmpty( writeExpression ) ) {
+				writeExpression = null;
+			}
+		}
 	}
 
 	private static Ejb3Column[] buildImplicitColumn(
@@ -491,6 +542,7 @@ public class Ejb3Column {
 		else {
 			column.setImplicit( true );
 		}
+		column.extractDataFromPropertyData( inferredData );
 		column.bind();
 		return columns;
 	}
