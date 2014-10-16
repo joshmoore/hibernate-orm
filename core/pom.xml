@@ -13,6 +13,7 @@
     <groupId>org.hibernate</groupId>
     <artifactId>hibernate-core</artifactId>
     <packaging>jar</packaging>
+    <version>3.5.6-PATCHED</version>
 
     <name>Hibernate Core</name>
     <description>The core functionality of Hibernate</description>

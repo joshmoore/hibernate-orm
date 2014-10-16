@@ -469,13 +469,7 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>99.0-does-not-exist</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>commons-logging</groupId>
-            <artifactId>commons-logging-api</artifactId>
-            <version>99.0-does-not-exist</version>
+            <version>1.0.4</version>
             <scope>test</scope>
         </dependency>
         <!-- / test-scoped dependencies for common testing dependencies -->
@@ -542,7 +536,7 @@
             <dependency>
                 <groupId>hsqldb</groupId>
                 <artifactId>hsqldb</artifactId>
-                <version>1.8.0.2</version>
+                <version>1.8.0.7</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
