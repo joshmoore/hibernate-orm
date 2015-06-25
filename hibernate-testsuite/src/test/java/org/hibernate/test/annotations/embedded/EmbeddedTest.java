@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -481,6 +482,21 @@ public class EmbeddedTest extends TestCase {
 
 	public EmbeddedTest(String x) {
 		super( x );
+	}
+
+	/*
+	 * support for merging a Book with a transient component (Summary)
+	 * See HHH-3868
+	 */
+	public void testTransientMergeComponentParent() {
+		Session session = openSession();
+		Transaction tx = session.beginTransaction();
+		Book b = new Book();
+		b.setIsbn(UUID.randomUUID().toString());
+		b.setSummary(new Summary());
+		b = (Book) session.merge(b);
+		tx.commit();
+		session.close();
 	}
 
 	protected Class[] getAnnotatedClasses() {
