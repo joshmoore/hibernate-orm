@@ -210,7 +210,49 @@
                     </archive>
                 </configuration>
             </plugin>
-        </plugins>
+      <plugin>
+          <groupId>org.jfrog.buildinfo</groupId>
+          <artifactId>artifactory-maven-plugin</artifactId>
+          <version>2.2.1</version>
+          <inherited>false</inherited>
+          <executions>
+              <execution>
+                  <id>build-info</id>
+                  <goals>
+                      <goal>publish</goal>
+                  </goals>
+                  <configuration>
+                      <deployProperties>
+                          <build.info.version>${build.info.version}</build.info.version>
+                      </deployProperties>
+                      <artifactory>
+                          <includeEnvVars>true</includeEnvVars>
+                          <timeoutSec>60</timeoutSec>
+                          <propertiesFile>publish.properties</propertiesFile>
+                      </artifactory>
+                      <publisher>
+                          <contextUrl>http://artifacts.openmicroscopy.org/artifactory/</contextUrl>
+                          <username>${env.CI_DEPLOY_USER}</username>
+                          <password>${env.CI_DEPLOY_PASS}</password>
+                          <repoKey>ome.releases</repoKey>
+                          <snapshotRepoKey>ome.external</snapshotRepoKey>
+                      </publisher>
+                      <buildInfo>
+                          <buildNumber>${env.TRAVIS_BUILD_NUMBER}</buildNumber>
+                          <buildUrl>${env.BUILD_URL}</buildUrl>
+                      </buildInfo>
+                  </configuration>
+              </execution>
+          </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-deploy-plugin</artifactId>
+        <version>2.7</version>
+        <configuration>
+          <retryFailedDeploymentCount>10</retryFailedDeploymentCount>
+        </configuration>
+      </plugin>
+     </plugins>
     </build>
 
     <reporting>
@@ -229,8 +271,8 @@
                 <artifactId>maven-javadoc-plugin</artifactId>
 				<version>2.7</version>
                 <configuration>
-                    <!-- 
-                    for the time being, gonna ignore the custom stylesheet (what did it do anyway???) 
+                    <!--
+                    for the time being, gonna ignore the custom stylesheet (what did it do anyway???)
                     <stylesheetfile>xyz</stylesheetfile>
                     -->
                     <groups>
@@ -259,4 +301,14 @@
     <properties>
         <antlrPluginVersion>2.1</antlrPluginVersion>
     </properties>
+
+  <pluginRepositories>
+      <pluginRepository>
+          <id>evgenyg.artifactoryonline.com</id>
+          <url>http://evgenyg.artifactoryonline.com/evgenyg/repo</url>
+          <snapshots><enabled>true</enabled></snapshots>
+          <releases><enabled>true</enabled></releases>
+      </pluginRepository>
+  </pluginRepositories>
+
 </project>
