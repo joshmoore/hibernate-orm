@@ -29,7 +29,7 @@
     <groupId>org.hibernate</groupId>
     <artifactId>hibernate-parent</artifactId>
     <packaging>pom</packaging>
-    <version>3.6.10.Final</version>
+    <version>3.6.10-HHH3868</version>
 
     <name>Hibernate Core Parent POM</name>
     <description>The base POM for all Hibernate Core modules.</description>
@@ -475,13 +475,13 @@
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging</artifactId>
-            <version>99.0-does-not-exist</version>
+            <version>1.0.3</version>
             <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging-api</artifactId>
-            <version>99.0-does-not-exist</version>
+            <version>1.0.3</version>
             <scope>test</scope>
         </dependency>
         <!-- / test-scoped dependencies for common testing dependencies -->
@@ -1055,6 +1055,6 @@
     <properties>
         <slf4jVersion>1.6.1</slf4jVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <bytemanVersion>1.5.1</bytemanVersion>
+        <bytemanVersion>2.0.4</bytemanVersion>
     </properties>
 </project>
